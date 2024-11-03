@@ -1,3 +1,37 @@
+# Building a plugin
+- https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin
+
+# Debug Plugin
+```bash
+npm run dev
+```
+
+# Using NodeJS on Windows
+- https://nodejs.org/en/download/package-manager
+```bash
+# installs fnm (Fast Node Manager)
+winget install Schniz.fnm
+# configure fnm environment
+fnm env --use-on-cd | Out-String | Invoke-Expression
+# download and install Node.js
+fnm use --install-if-missing 22
+# verifies the right Node.js version is in the environment
+node -v # should print `v22.11.0`
+# verifies the right npm version is in the environment
+npm -v # should print `10.9.0`
+```
+
+# dev console in cobsidian
+- https://forum.obsidian.md/t/how-to-access-the-console/16703
+- CTRL + shift + i
+
+# Obsidian built in icons
+- https://lucide.dev/
+- https://forum.obsidian.md/t/obsidian-built-in-icon/36950
+
+# Obsidian Dev Notes
+- Icons: https://docs.obsidian.md/Plugins/User+interface/Icons
+
 # Obsidian Sample Plugin
 
 This is a sample plugin for Obsidian (https://obsidian.md).
