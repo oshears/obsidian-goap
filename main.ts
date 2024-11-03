@@ -1,7 +1,9 @@
 import { App, Editor, FrontMatterInfo, MarkdownView, Modal, Notice, parseYaml, Plugin, PluginSettingTab, Setting} from 'obsidian';
 import { getFrontMatterInfo, parseFrontMatterEntry, parseFrontMatterTags, TFile, MarkdownPostProcessorContext, FrontMatterCache  } from 'obsidian';
+import {Node} from './src/graph/Node'
 
 import { writeFile } from 'fs'
+import { MakeGraph } from 'src/graph/Graph';
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
@@ -32,8 +34,8 @@ export default class MyPlugin extends Plugin {
 			// 	// this.app.vault.modify(file)
 			// 	this.app.vault.getfi
 			// });
-			const app = this.app;
-			const vault = this.app.vault;
+			// const app = this.app;
+			// const vault = this.app.vault;
 			const file = this.app.vault.getFileByPath("test-file.md");
 			if (file == null) return;
 			
@@ -57,71 +59,7 @@ export default class MyPlugin extends Plugin {
 
 			// });
 
-			let graphFile = "digraph graphname {\n";
-
-			let nodeCount = 0;
-			// let nodes = new Set<string[]>();
-			const nodeDict: {[id: string] : string; } = {};
-			
-			for (const [key, values] of Object.entries(app.metadataCache.resolvedLinks)){
-				if (!key.contains("GOAP/")){
-					continue;
-				}
-
-				// console.log(`(1)${key}\n(2)${value[0]}`)
-				// nodes.add(key);
-
-				// get name of node if already exists
-				let nodeName = `${nodeCount}`;
-				if (nodeDict.hasOwnProperty(nodeName)){
-					nodeName = nodeDict[nodeName];
-				}
-				else{
-					nodeCount++;
-					nodeName = `${nodeCount}`;
-					nodeDict[key] = nodeName
-				}
-				
-
-				const endPoints = Object.keys(values);
-				graphFile += ` ${nodeName} -> {`;
-				for(let i = 0; i <  endPoints.length; i++){
-					// nodes.add(key);
-					console.log(`(1)${key}\n(2)${endPoints[i]}`)
-					
-					let endPointId = `${0}`
-					if (nodeDict.hasOwnProperty(`${endPoints[i]}`)){
-						endPointId = nodeDict[endPoints[i]];
-					}
-					else{
-						nodeCount++;
-						endPointId = `${nodeCount}`;
-						nodeDict[endPoints[i]] = `${nodeCount}`
-					}
-
-					graphFile += ` ${endPointId} ;`;
-					
-				}
-				graphFile += ` }\n`;
-				
-			}
-
-			for (const [key, values] of Object.entries(nodeDict)){
-				graphFile += ` ${values} [label="${key}"];\n`
-			}
-			graphFile += "}"
-
-			// writeFile('./graph.dot',graphFile,(err) => {
-			vault.adapter.write("graph.dot",graphFile);
-			// writeFile("/home/oshears/projects/primordial/goap-analysis")
-			// writeFile(,graphFile,(err) => {
-			// 	if (err){
-			// 		console.log("error writing graph.dot file!");
-			// 		return;
-			// 	}
-			// 	console.log(process.cwd())
-			// 	// console.log("wrote graph.dot file!");
-			// });
+			const graph = MakeGraph(this.app);
 
 		});
 		// Perform additional things with the ribbon
