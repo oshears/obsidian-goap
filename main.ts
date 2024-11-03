@@ -1,5 +1,7 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, FrontMatterInfo, MarkdownView, Modal, Notice, parseYaml, Plugin, PluginSettingTab, Setting} from 'obsidian';
+import { getFrontMatterInfo, parseFrontMatterEntry, parseFrontMatterTags, TFile, MarkdownPostProcessorContext, FrontMatterCache  } from 'obsidian';
 
+import { writeFile } from 'fs'
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
@@ -17,9 +19,110 @@ export default class MyPlugin extends Plugin {
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
+		const ribbonIconEl = this.addRibbonIcon('git-graph', 'GOAP Process', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
 			new Notice('This is a notice!');
+			console.log("test");
+
+			// const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+			// this.ap
+			// console.log("displaying notes: %" % this.app.vault.fil)
+			// this.app.vault.getMarkdownFiles().forEach(file => {
+			// 	console.log(file);
+			// 	// this.app.vault.modify(file)
+			// 	this.app.vault.getfi
+			// });
+			const app = this.app;
+			const vault = this.app.vault;
+			const file = this.app.vault.getFileByPath("test-file.md");
+			if (file == null) return;
+			
+			// this.app.vault.modify(file,"hello this is a test string");
+			// vault.process(file, (data) => {
+			// 	const frontMatterInfo:FrontMatterInfo = getFrontMatterInfo(data);
+			// 	console.log(`type field: ${parseFrontMatterEntry(frontMatterInfo.frontmatter,"type")} detected`);
+
+			// 	// const file = app.vault.getAbstractFileByPath(.current().file.path); 
+			// 	const metadata = app.metadataCache.getFileCache(file);
+			// 	if (!metadata) return data; 
+			// 	const frontmatter = metadata.frontmatter;
+			// 	if (!frontmatter) return data;
+
+			// 	// app.vault.getAbstractFileByPath("your/file.md") 
+			// 	const cachedFrontMatter = metadata.frontmatter;
+			// 	if (!cachedFrontMatter) return data;
+			// 	console.log(cachedFrontMatter)
+
+			// 	return data
+
+			// });
+
+			let graphFile = "digraph graphname {\n";
+
+			let nodeCount = 0;
+			// let nodes = new Set<string[]>();
+			const nodeDict: {[id: string] : string; } = {};
+			
+			for (const [key, values] of Object.entries(app.metadataCache.resolvedLinks)){
+				if (!key.contains("GOAP/")){
+					continue;
+				}
+
+				// console.log(`(1)${key}\n(2)${value[0]}`)
+				// nodes.add(key);
+
+				// get name of node if already exists
+				let nodeName = `${nodeCount}`;
+				if (nodeDict.hasOwnProperty(nodeName)){
+					nodeName = nodeDict[nodeName];
+				}
+				else{
+					nodeCount++;
+					nodeName = `${nodeCount}`;
+					nodeDict[key] = nodeName
+				}
+				
+
+				const endPoints = Object.keys(values);
+				graphFile += ` ${nodeName} -> {`;
+				for(let i = 0; i <  endPoints.length; i++){
+					// nodes.add(key);
+					console.log(`(1)${key}\n(2)${endPoints[i]}`)
+					
+					let endPointId = `${0}`
+					if (nodeDict.hasOwnProperty(`${endPoints[i]}`)){
+						endPointId = nodeDict[endPoints[i]];
+					}
+					else{
+						nodeCount++;
+						endPointId = `${nodeCount}`;
+						nodeDict[endPoints[i]] = `${nodeCount}`
+					}
+
+					graphFile += ` ${endPointId} ;`;
+					
+				}
+				graphFile += ` }\n`;
+				
+			}
+
+			for (const [key, values] of Object.entries(nodeDict)){
+				graphFile += ` ${values} [label="${key}"];\n`
+			}
+			graphFile += "}"
+
+			// writeFile('./graph.dot',graphFile,(err) => {
+			vault.adapter.write("graph.dot",graphFile);
+			// writeFile("/home/oshears/projects/primordial/goap-analysis")
+			// writeFile(,graphFile,(err) => {
+			// 	if (err){
+			// 		console.log("error writing graph.dot file!");
+			// 		return;
+			// 	}
+			// 	console.log(process.cwd())
+			// 	// console.log("wrote graph.dot file!");
+			// });
+
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
@@ -27,6 +130,18 @@ export default class MyPlugin extends Plugin {
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
 		statusBarItemEl.setText('Status Bar Text');
+
+		this.addCommand({
+			id: "test-cmd",
+			name: "test command",
+			callback() {
+				console.log("ran test command!");
+				// this.app.
+				// const file = this.app.vault.getFileByPath("test-file.md");
+				// this.app.vault.modify("test-file","hello this is a test string");
+				// console.log(this.app.vault.)
+			},
+		})
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
