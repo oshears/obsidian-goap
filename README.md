@@ -21,6 +21,9 @@ node -v # should print `v22.11.0`
 npm -v # should print `10.9.0`
 ```
 
+# using react with obsidian
+- https://docs.obsidian.md/Plugins/Getting+started/Use+React+in+your+plugin
+
 # dev console in cobsidian
 - https://forum.obsidian.md/t/how-to-access-the-console/16703
 - CTRL + shift + i

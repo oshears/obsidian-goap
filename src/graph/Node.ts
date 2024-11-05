@@ -17,8 +17,8 @@ export class GraphNode {
 	}
 
 	addNext(next:GraphNode){
-        console.log(next)
-        console.log(this.neighbors)
+        // console.log(next)
+        // console.log(this.neighbors)
 		this.neighbors.push(next);
 	}
    

@@ -6,7 +6,7 @@ import { writeFile } from 'fs'
 import { Graph, MakeGraph } from 'src/graph/Graph';
 import { aStar } from 'src/graph/a-star';
 import { Action, Belief, Goal, Goap, Sensor } from 'src/graph/GOAP';
-import { VIEW_TYPE_GOAP, GoapView, activateView } from 'src/views/GOAPView';
+import { VIEW_TYPE_GOAP, GoapView, activateView } from 'src/views/GoapView';
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {

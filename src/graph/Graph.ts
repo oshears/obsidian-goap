@@ -67,7 +67,7 @@ export function MakeGraph(app:App){
         // for each edge end point
         for(let i = 0; i <  endPoints.length; i++){
             // nodes.add(key);
-            console.log(`(1)${key}\n(2)${endPoints[i]}`)
+            // console.log(`(1)${key}\n(2)${endPoints[i]}`)
             
             let endPointId = `${-2}`
 
@@ -114,7 +114,7 @@ export function MakeGraph(app:App){
     // 	// console.log("wrote graph.dot file!");
     // });
 
-    console.log(nodes);
+    // console.log(nodes);
 
     // return graphFile;
     return new Graph(nodes);
