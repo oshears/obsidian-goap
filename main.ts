@@ -1,9 +1,12 @@
-import { App, Editor, FrontMatterInfo, MarkdownView, Modal, Notice, parseYaml, Plugin, PluginSettingTab, Setting} from 'obsidian';
+import { App, Editor, FrontMatterInfo, ItemView, MarkdownView, Modal, Notice, parseYaml, Plugin, PluginSettingTab, Setting, WorkspaceLeaf} from 'obsidian';
 import { getFrontMatterInfo, parseFrontMatterEntry, parseFrontMatterTags, TFile, MarkdownPostProcessorContext, FrontMatterCache  } from 'obsidian';
-import {Node} from './src/graph/Node'
+import {GraphNode, Node} from './src/graph/Node'
 
 import { writeFile } from 'fs'
-import { MakeGraph } from 'src/graph/Graph';
+import { Graph, MakeGraph } from 'src/graph/Graph';
+import { aStar } from 'src/graph/a-star';
+import { Action, Belief, Goal, Goap, Sensor } from 'src/graph/GOAP';
+import { VIEW_TYPE_GOAP, GoapView, activateView } from 'src/views/GOAPView';
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
@@ -19,6 +22,14 @@ export default class MyPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+
+		this.registerView(VIEW_TYPE_GOAP,
+			(leaf) => new GoapView(leaf)
+		);
+
+		this.addRibbonIcon('dice', 'Activate view', () => {
+			activateView(this);
+		});
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('git-graph', 'GOAP Process', (evt: MouseEvent) => {
@@ -59,7 +70,27 @@ export default class MyPlugin extends Plugin {
 
 			// });
 
-			const graph = MakeGraph(this.app);
+			const graph:Graph = MakeGraph(this.app);
+			const path = aStar(graph.nodes[0],graph.nodes[74]);
+			console.log(path)
+
+			const goap:Goap = new Goap()
+			graph.nodes.forEach(node => {
+				if (node.name.contains("Actions/")){
+					goap.actions.push(new Action(node))
+				}
+				if (node.name.contains("Beliefs/")){
+					goap.beliefs.push(new Belief(node))
+				}
+				if (node.name.contains("Goals/")){
+					goap.goals.push(new Goal(node))
+				}
+				if (node.name.contains("Sensors/")){
+					goap.sensors.push(new Sensor(node))
+				}
+			}); 
+			console.log(goap)
+
 
 		});
 		// Perform additional things with the ribbon

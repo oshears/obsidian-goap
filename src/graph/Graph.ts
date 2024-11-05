@@ -4,8 +4,10 @@ import {GraphNode} from "./Node"
 export class Graph {
     nodes:GraphNode[] = [];
 
-    onstructor() {
-
+    constructor(nodes?:GraphNode[]){
+        if (nodes) {
+            this.nodes = nodes;
+        }
     }
 
     addNode(node:GraphNode){
@@ -113,4 +115,7 @@ export function MakeGraph(app:App){
     // });
 
     console.log(nodes);
+
+    // return graphFile;
+    return new Graph(nodes);
 }
